@@ -1,4 +1,6 @@
-# Agendify agenda pilot
+# Agendify
+
+**Synthetic data only.** The Node/SQLite scheduling pilot below is provisional and remains available until N3c delivers tested behavior parity. A separate Next.js/Supabase foundation is under development; neither is approved for real patient data or production use. See [deployment readiness](docs/deployment.md) for isolated local/dev/staging/prod configuration names, CI checks, managed deployment plan, and Ecuador legal and operational signoff gates.
 
 Run a local scheduling pilot for **synthetic patients only**. It lets you view appointments by day and site, book a 30-minute slot with a professional, and cancel a booking. The interface follows the Agendify Brand Book v1.0.
 
