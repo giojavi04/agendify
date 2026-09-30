@@ -16,12 +16,13 @@ The repository is empty and the brand book defines visual identity and broad pro
 ## Tasks
 - [x] T1 — Implement local scheduling API, seed synthetic sites/professionals, persistence, conflict validation, and focused tests. Acceptance: list/create/cancel work; invalid input and double booking fail predictably. Checks: four API/domain tests pass; syntax checks pass; independent verifier confirmed persisted SQLite and conflict handling. Status: done. Commit: f143eb920c42a8a7a6962dfdac052ba29b5202bb.
 - [x] T2 — Build responsive agenda UI with brand tokens and creation/cancellation flow against API. Acceptance: desktop/mobile layout, day/site filter, booking/cancellation, and clear empty/error states. Checks: `npm test` 9/9, syntax and diff checks passed; independent verifier found startup timing issue, corrected with regression. Browser interaction smoke pending T3. Status: done. Commit: 9c77f746de7519874445f9f82cb817dfad204386.
-- [ ] T3 — Document pilot setup, limitations, and end-to-end verification. Acceptance: clean checkout can run pilot and tests; no suggestion it is safe for real patient data. Checks: fresh install/run/build or equivalent. Status: in progress. Commit: pending.
+- [x] T3 — Document pilot setup, limitations, and end-to-end verification. Acceptance: dependency-free Node 24 startup instructions and explicit synthetic-only boundaries. Checks: independent `npm test` 9/9, syntax checks, in-memory HTTP page/book/list/cancel smoke, and `git diff --check` passed. Fresh-checkout and manual desktop/mobile browser checks not run. Status: done. Commit: df2aca28d4c6a416023f9aa92c857fcad245e94e.
 
 ## Progress and evidence
 - 2026-09-30: User chose an operational agenda MVP, then synthetic-data pilot. Brand Book v1.0 reviewed; repository initially had no commits.
 - 2026-09-30: T1 implemented and independently verified (`npm test`: 4/4; `node --check` passed). SQLite accepts arbitrary entered names; synthetic-only is an explicit usage boundary, not an enforced detector. No production use.
-- 2026-09-30: T2 UI implemented and corrected after independent review (`npm test`: 9/9); responsive browser rendering and end-to-end smoke have not yet been checked. Its 423-line cohesive work-unit commit exceeds the usual 400-line review target by 23 lines; evaluate a review slice before PR delivery.
+- 2026-09-30: T2 UI implemented and corrected after independent review (`npm test`: 9/9). Its 423-line cohesive work-unit commit exceeds the usual 400-line review target by 23 lines; evaluate reviewer workload before PR delivery.
+- 2026-09-30: T3 README and independent HTTP smoke passed; manual browser interaction and responsive rendering were not available, and fresh-checkout was not run. No production or real-patient use is authorized.
 
 ## Next step
-Document startup and boundaries; run final end-to-end smoke and independent checks for T3.
+Review the committed pilot, then have a human check desktop/mobile browser flows with fictional data. Decide production requirements separately before real usage.
