@@ -3,11 +3,10 @@ import assert from 'node:assert/strict';
 import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { createServer } from '../src/server.js';
+import { startServer } from '../src/server.js';
 
 async function start(dbPath = ':memory:') {
-  const server = createServer({ dbPath });
-  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  const server = await startServer({ dbPath });
   return { server, root: `http://127.0.0.1:${server.address().port}` };
 }
 
@@ -46,6 +45,31 @@ test('HTTP endpoints, errors, filters and persisted appointments', async () => {
   } finally { await new Promise(resolve => server.close(resolve)); }
 });
 
-test('server disallows non-loopback bind configuration', () => {
-  assert.throws(() => createServer({ host: '0.0.0.0' }), /loopback/);
+test('serves only explicitly allowed static routes with correct content types', async () => {
+  const { server, root } = await start();
+  try {
+    for (const [path, type, marker] of [
+      ['/', 'text/html', 'Piloto local solo para pacientes sintéticos'],
+      ['/app.js', 'text/javascript', 'textContent'],
+      ['/style.css', 'text/css', '#2563EB']
+    ]) {
+      const response = await fetch(root + path);
+      assert.equal(response.status, 200);
+      assert.match(response.headers.get('content-type'), new RegExp(type));
+      assert.equal(response.headers.get('x-content-type-options'), 'nosniff');
+      assert.ok((await response.text()).includes(marker));
+    }
+    for (const path of ['/index.html', '/src/server.js', '/public/app.js', '/missing', '/app.js/extra']) {
+      assert.equal((await fetch(root + path)).status, 404);
+    }
+    assert.equal((await fetch(root + '/', { method: 'POST' })).status, 404);
+  } finally { await new Promise(resolve => server.close(resolve)); }
+});
+
+test('programmatic startup listens only on loopback and rejects invalid ports', async () => {
+  await assert.rejects(startServer({ port: -1 }), /Invalid PORT/);
+  const server = await startServer();
+  try {
+    assert.equal(server.address().address, '127.0.0.1');
+  } finally { await new Promise(resolve => server.close(resolve)); }
 });

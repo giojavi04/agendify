@@ -1,5 +1,6 @@
 import http from 'node:http';
-import { pathToFileURL } from 'node:url';
+import { readFile } from 'node:fs/promises';
+import { pathToFileURL, fileURLToPath } from 'node:url';
 import { InputError, openScheduling } from './scheduling.js';
 
 function queryId(value) {
@@ -17,8 +18,7 @@ async function body(request) {
   try { return JSON.parse(data); } catch { throw new InputError('Invalid JSON'); }
 }
 
-export function createServer({ dbPath = ':memory:', host = '127.0.0.1' } = {}) {
-  if (host !== '127.0.0.1' && host !== '::1') throw new Error('Only loopback hosts are allowed');
+function createServer(dbPath) {
   const store = openScheduling(dbPath);
   const server = http.createServer(async (request, response) => {
     const send = (status, value) => {
@@ -27,6 +27,17 @@ export function createServer({ dbPath = ':memory:', host = '127.0.0.1' } = {}) {
     };
     try {
       const url = new URL(request.url, 'http://localhost');
+      const staticFiles = {
+        '/': ['index.html', 'text/html; charset=utf-8'],
+        '/app.js': ['app.js', 'text/javascript; charset=utf-8'],
+        '/style.css': ['style.css', 'text/css; charset=utf-8']
+      };
+      if (request.method === 'GET' && Object.hasOwn(staticFiles, url.pathname)) {
+        const [name, type] = staticFiles[url.pathname];
+        const content = await readFile(fileURLToPath(new URL(`../public/${name}`, import.meta.url)));
+        response.writeHead(200, { 'Content-Type': type, 'X-Content-Type-Options': 'nosniff' });
+        return response.end(content);
+      }
       const siteId = () => queryId(url.searchParams.get('siteId'));
       if (request.method === 'GET' && url.pathname === '/api/sites') return send(200, store.sites());
       if (request.method === 'GET' && url.pathname === '/api/professionals') return send(200, store.professionals(siteId()));
@@ -45,10 +56,28 @@ export function createServer({ dbPath = ':memory:', host = '127.0.0.1' } = {}) {
   return server;
 }
 
+export async function startServer({ dbPath = ':memory:', port = 0 } = {}) {
+  if (!Number.isInteger(port) || port < 0 || port > 65535) throw new Error('Invalid PORT');
+  const server = createServer(dbPath);
+  try {
+    await new Promise((resolve, reject) => {
+      server.once('error', reject);
+      server.listen(port, '127.0.0.1', () => {
+        server.off('error', reject);
+        resolve();
+      });
+    });
+    return server;
+  } catch (error) {
+    server.close();
+    throw error;
+  }
+}
+
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const port = Number(process.env.PORT ?? 3000);
   if (!Number.isInteger(port) || port < 0 || port > 65535) throw new Error('Invalid PORT');
-  createServer({ dbPath: process.env.DB_PATH ?? 'agendify.sqlite' }).listen(port, '127.0.0.1', () => {
+  startServer({ dbPath: process.env.DB_PATH ?? 'agendify.sqlite', port }).then(() => {
     console.log(`Agendify pilot listening on http://127.0.0.1:${port}`);
   });
 }
