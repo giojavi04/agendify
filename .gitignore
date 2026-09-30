@@ -1,0 +1,10 @@
+# Local Pi runtime state
+.atl/
+
+# Local pilot data and Node artifacts
+*.sqlite
+*.sqlite-*
+*.db
+*.db-*
+node_modules/
+coverage/
