@@ -17,8 +17,9 @@ The pilot has no authentication, tenant isolation, or operational controls. The 
 - [x] N1 — Introduce a runnable Next.js/TypeScript branded synthetic-data shell and independent tests; keep existing pilot functional until migrated. Checks: install, 2/2 tests, TypeScript, Next.js build passed independently; lint not configured; browser check pending. Status: done. Commit: d46427d9d6c17a6835689624769b3a62eef953b8.
 - [x] N2 — Add Supabase versioned schema/membership/RLS and negative isolation tests with database-enforced booking conflict; use synthetic-only fixtures. Checks: `supabase test db` 33/33 and `supabase db lint --local` passed independently. Status: done. Commit: 667ed5e48b77d41037b2594eafbe933092b5e9b9.
 - [x] N2a — Make a local Docker-compatible container runtime available for `supabase start` and database policy verification; do not reset an existing database. Checks: `docker info` reports daemon 29.8.1; `supabase status` initially reported no existing `supabase_db_agendify` container. Status: done. Commit: not applicable; environment prerequisite.
-- [ ] N3 — Add server-only authenticated data layer and booking flows in Next.js, then retire tracked Node/SQLite pilot only after behavior parity and focused verification. Checks: valid/invalid booking, cancellation, tenant-denial, authenticated UI route tests. Status: blocked pending N3a; no authentication integration yet. Commit: pending.
-- [ ] N3a — Resolve the first-release actor model (staff-only scheduling versus patient self-service) before designing patient identity and authorization. Status: in progress; user decision needed.
+- [x] N3a — Resolve the first-release actor model. User selected authenticated clinic staff only; no patient portal or public signup in this increment. Status: done. Commit: not applicable; product decision.
+- [ ] N3b — Add Supabase SSR staff sign-in and a server-only organization-aware access boundary in Next.js; no self-signup or admin service key in app. Checks: auth-denial tests, typecheck, build, local signed-in smoke if fixture setup allows. Status: in progress. Commit: pending.
+- [ ] N3c — Add minimal tenant-scoped synthetic patient/booking model and staff create/list/cancel flows, then retire tracked Node/SQLite pilot only after parity. Checks: tenant-denial, conflict and cancellation DB/UI tests, no real-data input while go-live gated. Status: pending. Commit: pending.
 - [ ] N4 — Add CI and separate environment configuration/templates, deployment/runbook and explicit real-data go-live gates; no production provisioning or compliance claim. Checks: CI-equivalent local commands, secrets scan, docs review. Status: pending. Commit: pending.
 
 ## Progress and evidence
@@ -28,6 +29,7 @@ The pilot has no authentication, tenant isolation, or operational controls. The 
 - 2026-09-30: N2 stopped before SQL writes because Docker daemon was unavailable. User chose Docker Desktop; `docker info` now reports 29.8.1, while `supabase status` reports no existing local project container. No database was reset.
 
 - 2026-09-30: N2 local migration, RLS and 33 pgTAP assertions passed independently with lint clean. Existing model has no patient identity or clinic actor roles beyond organization membership; it does not yet support real-patient workflows.
+- 2026-09-30: User chose staff-only scheduling for the first version; patient accounts and public booking are out of scope. Split N3 into auth boundary and booking parity to keep review units focused. Patient identity fields and role granularity remain future product decisions.
 
 ## Next step
-Resolve N3a before creating patient records, signup paths, or booking permissions. Do not handle real data.
+Implement N3b with an explicit no-real-data gate, verify it, then scope N3c. Do not handle real data.
