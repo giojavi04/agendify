@@ -8,3 +8,7 @@
 *.db-*
 node_modules/
 coverage/
+
+# Local Supabase CLI state and generated secrets
+supabase/.branches/
+supabase/.temp/
