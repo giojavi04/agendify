@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(55);
+select plan(59);
 
 -- Synthetic Auth identities; all fixture rows roll back.
 insert into auth.users (id, instance_id, aud, role, email, encrypted_password, created_at, updated_at)
@@ -29,9 +29,12 @@ insert into public.professional_sites values
  ('10000000-0000-4000-8000-000000000001', '20000000-0000-4000-8000-000000000003', '30000000-0000-4000-8000-000000000003');
 insert into public.patients (id, organization_id, display_label, is_synthetic) values
  ('50000000-0000-4000-8000-000000000001', '10000000-0000-4000-8000-000000000001', 'Fictional Patient A', true),
- ('50000000-0000-4000-8000-000000000002', '10000000-0000-4000-8000-000000000002', 'Fictional Patient B', true);
+ ('50000000-0000-4000-8000-000000000002', '10000000-0000-4000-8000-000000000002', 'Fictional Patient B', true),
+ -- Privileged, transaction-only placeholder: no actual patient identity or PHI.
+ ('50000000-0000-4000-8000-000000000003', '10000000-0000-4000-8000-000000000001', 'Non-synthetic test placeholder', false);
 insert into public.appointments (id, organization_id, site_id, professional_id, patient_id, starts_at, ends_at) values
- ('40000000-0000-4000-8000-000000000002', '10000000-0000-4000-8000-000000000002', '20000000-0000-4000-8000-000000000002', '30000000-0000-4000-8000-000000000002', '50000000-0000-4000-8000-000000000002', '2030-01-01 10:00+00', '2030-01-01 11:00+00');
+ ('40000000-0000-4000-8000-000000000002', '10000000-0000-4000-8000-000000000002', '20000000-0000-4000-8000-000000000002', '30000000-0000-4000-8000-000000000002', '50000000-0000-4000-8000-000000000002', '2030-01-01 10:00+00', '2030-01-01 11:00+00'),
+ ('40000000-0000-4000-8000-000000000003', '10000000-0000-4000-8000-000000000001', '20000000-0000-4000-8000-000000000001', '30000000-0000-4000-8000-000000000001', '50000000-0000-4000-8000-000000000003', '2030-01-06 10:00+00', '2030-01-06 11:00+00');
 
 set local role anon;
 select throws_ok($$select * from public.patients$$, '42501', 'permission denied for table patients', 'anonymous cannot read patients');
@@ -61,7 +64,7 @@ select is((select count(*) from public.professional_sites), 2::bigint, 'member s
 select is((select count(*) from public.professional_sites where organization_id = '10000000-0000-4000-8000-000000000002'), 0::bigint, 'other organization assignments hidden');
 select is((select count(*) from public.professionals), 2::bigint, 'member sees own professionals');
 select is((select count(*) from public.memberships), 1::bigint, 'member sees only own membership');
-select is((select count(*) from public.patients), 1::bigint, 'member sees only own patient');
+select is((select count(*) from public.patients), 2::bigint, 'member sees only own patients');
 select is((select count(*) from public.patients where is_synthetic), 1::bigint, 'fictional patient is explicitly synthetic');
 select throws_ok($$update public.patients set is_synthetic = false$$, '42501', 'permission denied for table patients', 'staff cannot change provenance');
 select throws_ok($$insert into public.patients (organization_id, display_label, is_synthetic) values ('10000000-0000-4000-8000-000000000001', 'Fake', true)$$, '42501', 'permission denied for table patients', 'staff cannot declare synthetic provenance');
@@ -76,19 +79,23 @@ select throws_ok($$update public.patients set display_label = 'Changed'$$, '4250
 select throws_ok($$update public.sites set organization_id = '10000000-0000-4000-8000-000000000002'$$, '42501', 'permission denied for table sites', 'member cannot move site between organizations');
 select throws_ok($$insert into public.appointments (organization_id, site_id, professional_id, patient_id, starts_at, ends_at) values ('10000000-0000-4000-8000-000000000001', '20000000-0000-4000-8000-000000000001', '30000000-0000-4000-8000-000000000002', '50000000-0000-4000-8000-000000000001', '2030-01-02 10:00+00', '2030-01-02 11:00+00')$$, '23503', null, 'cross-tenant professional rejected by FK');
 select throws_ok($$insert into public.appointments (organization_id, site_id, professional_id, starts_at, ends_at) values ('10000000-0000-4000-8000-000000000002', '20000000-0000-4000-8000-000000000002', '30000000-0000-4000-8000-000000000002', '2030-01-02 10:00+00', '2030-01-02 11:00+00')$$, '42501', null, 'member cannot book other organization');
-select is((select count(*) from public.appointments), 1::bigint, 'member sees own alternate pairing, not other appointments');
+select is((select count(*) from public.appointments), 2::bigint, 'member sees own appointments, not other organization');
 with changed as (update public.appointments set status = 'cancelled' where id = '40000000-0000-4000-8000-000000000002' returning id) select is((select count(*) from changed), 0::bigint, 'member A cannot cancel member B appointment');
 select throws_ok($$update public.appointments set starts_at = '2030-01-03 10:00+00' where id = '40000000-0000-4000-8000-000000000002'$$, '42501', 'permission denied for table appointments', 'member A cannot change member B appointment');
 select throws_ok($$insert into public.appointments (organization_id, site_id, professional_id, patient_id, starts_at, ends_at) values ('10000000-0000-4000-8000-000000000001', '20000000-0000-4000-8000-000000000002', '30000000-0000-4000-8000-000000000001', '50000000-0000-4000-8000-000000000001', '2030-01-01 10:00+00', '2030-01-01 11:00+00')$$, '23503', null, 'cross-tenant site rejected by FK');
-select throws_ok($$insert into public.appointments (organization_id, site_id, professional_id, patient_id, starts_at, ends_at) values ('10000000-0000-4000-8000-000000000001', '20000000-0000-4000-8000-000000000001', '30000000-0000-4000-8000-000000000001', '50000000-0000-4000-8000-000000000002', '2030-01-04 10:00+00', '2030-01-04 11:00+00')$$, '23503', null, 'cross-tenant patient association rejected');
-select lives_ok($$insert into public.appointments (organization_id, site_id, professional_id, patient_id, starts_at, ends_at) values ('10000000-0000-4000-8000-000000000001', '20000000-0000-4000-8000-000000000001', '30000000-0000-4000-8000-000000000001', '50000000-0000-4000-8000-000000000001', '2030-01-01 10:00+00', '2030-01-01 11:00+00')$$, 'member books own organization');
+select throws_ok($$insert into public.appointments (organization_id, site_id, professional_id, patient_id, starts_at, ends_at) values ('10000000-0000-4000-8000-000000000001', '20000000-0000-4000-8000-000000000001', '30000000-0000-4000-8000-000000000001', '50000000-0000-4000-8000-000000000002', '2030-01-04 10:00+00', '2030-01-04 11:00+00')$$, '42501', null, 'cross-tenant patient association rejected by RLS');
+select throws_ok($$insert into public.appointments (organization_id, site_id, professional_id, patient_id, starts_at, ends_at) values ('10000000-0000-4000-8000-000000000001', '20000000-0000-4000-8000-000000000001', '30000000-0000-4000-8000-000000000001', '50000000-0000-4000-8000-000000000003', '2030-01-07 10:00+00', '2030-01-07 11:00+00')$$, '42501', null, 'member cannot book own non-synthetic patient');
+select lives_ok($$insert into public.appointments (organization_id, site_id, professional_id, patient_id, starts_at, ends_at) values ('10000000-0000-4000-8000-000000000001', '20000000-0000-4000-8000-000000000001', '30000000-0000-4000-8000-000000000001', '50000000-0000-4000-8000-000000000001', '2030-01-01 10:00+00', '2030-01-01 11:00+00')$$, 'member books own synthetic patient');
+with changed as (update public.appointments set status = 'cancelled' where id = '40000000-0000-4000-8000-000000000003' returning id) select is((select count(*) from changed), 0::bigint, 'member cannot cancel own non-synthetic patient appointment');
+select is((select status from public.appointments where id = '40000000-0000-4000-8000-000000000003'), 'confirmed', 'non-synthetic appointment remains confirmed');
 select throws_ok($$update public.appointments set patient_id = '50000000-0000-4000-8000-000000000002' where organization_id = '10000000-0000-4000-8000-000000000001'$$, '42501', 'permission denied for table appointments', 'member cannot change appointment patient');
 select throws_ok($$insert into public.appointments (organization_id, site_id, professional_id, patient_id, starts_at, ends_at) values ('10000000-0000-4000-8000-000000000001', '20000000-0000-4000-8000-000000000001', '30000000-0000-4000-8000-000000000001', '50000000-0000-4000-8000-000000000001', '2030-01-01 10:30+00', '2030-01-01 11:30+00')$$, '23P01', null, 'confirmed conflict rejected');
 select throws_ok($$update public.appointments set organization_id = '10000000-0000-4000-8000-000000000002' where organization_id = '10000000-0000-4000-8000-000000000001'$$, '42501', 'permission denied for table appointments', 'member cannot change own appointment organization');
 select throws_ok($$update public.appointments set site_id = '20000000-0000-4000-8000-000000000002' where organization_id = '10000000-0000-4000-8000-000000000001'$$, '42501', 'permission denied for table appointments', 'member cannot change own appointment site');
 select throws_ok($$update public.appointments set professional_id = '30000000-0000-4000-8000-000000000002' where organization_id = '10000000-0000-4000-8000-000000000001'$$, '42501', 'permission denied for table appointments', 'member cannot change own appointment professional');
 select throws_ok($$update public.appointments set starts_at = '2030-01-03 10:00+00' where organization_id = '10000000-0000-4000-8000-000000000001'$$, '42501', 'permission denied for table appointments', 'member cannot change own appointment time');
-select lives_ok($$update public.appointments set status = 'cancelled' where organization_id = '10000000-0000-4000-8000-000000000001'$$, 'member cancels');
+select lives_ok($$update public.appointments set status = 'cancelled' where organization_id = '10000000-0000-4000-8000-000000000001'$$, 'member cancels synthetic appointments');
+select is((select status from public.appointments where id = '40000000-0000-4000-8000-000000000003'), 'confirmed', 'bulk cancellation preserves non-synthetic appointment');
 select is((select count(*) from public.appointments where status = 'cancelled'), 2::bigint, 'cancelled appointments remain');
 with changed as (update public.appointments set status = 'confirmed' where status = 'cancelled' returning id) select is((select count(*) from changed), 0::bigint, 'authenticated member cannot re-confirm cancelled appointment');
 select lives_ok($$insert into public.appointments (organization_id, site_id, professional_id, patient_id, starts_at, ends_at) values ('10000000-0000-4000-8000-000000000001', '20000000-0000-4000-8000-000000000001', '30000000-0000-4000-8000-000000000001', '50000000-0000-4000-8000-000000000001', '2030-01-01 10:00+00', '2030-01-01 11:00+00')$$, 'cancel releases slot');
