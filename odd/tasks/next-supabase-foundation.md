@@ -15,9 +15,10 @@ The pilot has no authentication, tenant isolation, or operational controls. The 
 
 ## Tasks
 - [x] N1 — Introduce a runnable Next.js/TypeScript branded synthetic-data shell and independent tests; keep existing pilot functional until migrated. Checks: install, 2/2 tests, TypeScript, Next.js build passed independently; lint not configured; browser check pending. Status: done. Commit: d46427d9d6c17a6835689624769b3a62eef953b8.
-- [ ] N2 — Add Supabase versioned schema/membership/RLS and negative isolation tests with database-enforced booking conflict; use synthetic-only fixtures. Checks: local SQL migration and policy tests. Status: in progress. Commit: pending.
-- [x] N2a — Make a local Docker-compatible container runtime available for `supabase start` and database policy verification; do not reset an existing database. Checks: `docker info` reports daemon 29.8.1; `supabase status` reports no existing `supabase_db_agendify` container. Status: done. Commit: not applicable; environment prerequisite.
-- [ ] N3 — Add server-only authenticated data layer and booking flows in Next.js, then retire tracked Node/SQLite pilot only after behavior parity and focused verification. Checks: valid/invalid booking, cancellation, tenant-denial, authenticated UI route tests. Status: pending. Commit: pending.
+- [x] N2 — Add Supabase versioned schema/membership/RLS and negative isolation tests with database-enforced booking conflict; use synthetic-only fixtures. Checks: `supabase test db` 33/33 and `supabase db lint --local` passed independently. Status: done. Commit: 667ed5e48b77d41037b2594eafbe933092b5e9b9.
+- [x] N2a — Make a local Docker-compatible container runtime available for `supabase start` and database policy verification; do not reset an existing database. Checks: `docker info` reports daemon 29.8.1; `supabase status` initially reported no existing `supabase_db_agendify` container. Status: done. Commit: not applicable; environment prerequisite.
+- [ ] N3 — Add server-only authenticated data layer and booking flows in Next.js, then retire tracked Node/SQLite pilot only after behavior parity and focused verification. Checks: valid/invalid booking, cancellation, tenant-denial, authenticated UI route tests. Status: blocked pending N3a; no authentication integration yet. Commit: pending.
+- [ ] N3a — Resolve the first-release actor model (staff-only scheduling versus patient self-service) before designing patient identity and authorization. Status: in progress; user decision needed.
 - [ ] N4 — Add CI and separate environment configuration/templates, deployment/runbook and explicit real-data go-live gates; no production provisioning or compliance claim. Checks: CI-equivalent local commands, secrets scan, docs review. Status: pending. Commit: pending.
 
 ## Progress and evidence
@@ -26,5 +27,7 @@ The pilot has no authentication, tenant isolation, or operational controls. The 
 - 2026-09-30: N1 installed Next.js 16.3.8 and produced a static synthetic dashboard. Independent 2/2 tests, typecheck and build passed; no browser check. The lockfile is large but generated, not hand-written.
 - 2026-09-30: N2 stopped before SQL writes because Docker daemon was unavailable. User chose Docker Desktop; `docker info` now reports 29.8.1, while `supabase status` reports no existing local project container. No database was reset.
 
+- 2026-09-30: N2 local migration, RLS and 33 pgTAP assertions passed independently with lint clean. Existing model has no patient identity or clinic actor roles beyond organization membership; it does not yet support real-patient workflows.
+
 ## Next step
-Implement N2 and run local migration/RLS tests on a newly created synthetic-only Supabase project. Do not handle real data.
+Resolve N3a before creating patient records, signup paths, or booking permissions. Do not handle real data.
