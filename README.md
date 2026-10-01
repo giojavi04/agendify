@@ -1,31 +1,43 @@
 # Agendify
 
-**Synthetic data only.** The Node/SQLite scheduling pilot below is provisional and remains available until N3c delivers tested behavior parity. A separate Next.js/Supabase foundation is under development; neither is approved for real patient data or production use. See [deployment readiness](docs/deployment.md) for isolated local/dev/staging/prod configuration names, CI checks, managed deployment plan, and Ecuador legal and operational signoff gates.
+**Local synthetic staff scheduling only.** The current Next.js + Supabase app supports a signed-in staff booking and cancellation flow for fictional appointments. Local unit, database, Auth/PostgREST, and authenticated Chrome checks have passed; this is neither production-ready nor approved for real patient data. The old Node/SQLite pilot code is still tracked as legacy, pending user-executed deletion. See [deployment readiness](docs/deployment.md) for legal, region, privacy, and operational gates.
 
-Run a local scheduling pilot for **synthetic patients only**. It lets you view appointments by day and site, book a 30-minute slot with a professional, and cancel a booking. The interface follows the Agendify Brand Book v1.0.
+## Run the Next.js app locally
 
-## Run it
+Requires Node.js 24+, Docker, and the Supabase CLI. Use only fictional identities and appointments. Do not paste CLI-generated credentials into issues, logs, or shared files.
 
-Requires Node.js 24 or newer. No package installation or external service is needed.
+1. At the repository root, start local Supabase Docker services: `supabase start`.
+2. In `apps/web`, run `npm ci`. Set these names in ignored `apps/web/.env.local` with **local-only** values from your own Supabase CLI session (no credentials are provided here):
+
+   ```text
+   NEXT_PUBLIC_SUPABASE_URL=<local-project-url>
+   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<local-publishable-key>
+   AGENDIFY_SYNTHETIC_ONLY=true
+   ```
+
+3. In `apps/web`, run `npm run dev` and open the local Next.js URL shown by the command. Sign in with a **local test staff account**: authentication is required for the staff agenda. Use only synthetic fixture identities; do not use real patient or staff information. The synthetic gate must be exactly `true`; unset or other values fail closed. It is not a production enablement switch.
+
+## Verify locally
+
+From the repository root, with local Supabase running:
+
+```sh
+supabase test db
+supabase db lint --local
+```
+
+From `apps/web` after `npm ci`:
 
 ```sh
 npm test
-npm start
+npx tsc --noEmit
+npm run build
+npm run test:integration:local
+npm run test:browser:local
 ```
 
-Open <http://127.0.0.1:3000>. The app seeds two fictional sites and one fictional professional per site. Choose a date and site, enter a **fictional** patient name and service, then confirm or cancel a turn. Appointments are saved to `agendify.sqlite` in the working directory (ignored by Git); restart the server to check persistence. Set `PORT` and `DB_PATH` to use another local port or database path, e.g. `PORT=3001 DB_PATH=demo.sqlite npm start`.
+The integration smoke tests local Auth/PostgREST, tenant denial, booking conflict, and cancellation. The browser smoke tests the authenticated Next.js book/cancel flow using installed Chrome; `AGENDIFY_CHROME_PATH` can point to an absolute local Chrome executable. Both require local Supabase and synthetic fixtures, reject non-loopback endpoints, and attempt scoped cleanup. Keep Supabase CLI output private; see [deployment readiness](docs/deployment.md) for cleanup cautions and check limitations. The observed independent checks passed 19/19 web unit tests and 59/59 database tests, plus local Auth/PostgREST and authenticated browser book/cancel smoke; rerun them in your environment rather than treating those results as release approval.
 
-## Pilot rules
+## Legacy pilot and boundaries
 
-- One local organization with two seed sites and professionals. Slots are 30 minutes, from 08:00 through 17:30, in local wall-clock time; the last slot ends at 18:00.
-- One **confirmed** appointment per professional, date, and time. Cancelling keeps a cancelled record and releases the slot for another booking.
-- The API accepts nonempty names up to 120 characters after trimming; it cannot tell fictional names from real ones. **The synthetic-data-only boundary is a usage rule, not a technical guarantee. Never enter real names, medical details, or other patient information.** Any user of this machine who can access the local database may read it.
-- This is not production software: no authentication, authorization, encryption, audit trail, consent management, medical privacy controls, multi-user workflow, WhatsApp, payments, clinical records, or hosted deployment. A production version needs explicit jurisdiction, privacy, access-control, backup, availability, concurrency, and integration decisions.
-
-## API for local exploration
-
-`GET /api/sites`, `GET /api/professionals?siteId=1`, and `GET /api/appointments?date=YYYY-MM-DD&siteId=1` return JSON. `POST /api/appointments` accepts `{ "siteId": 1, "professionalId": 1, "date": "2026-10-01", "time": "09:00", "patientName": "Demo Patient", "service": "Demo visit" }`. `PATCH /api/appointments/1/cancel` cancels that booking. Invalid input returns `400`, absent records `404`, and an occupied slot `409`. HTTP startup binds to `127.0.0.1` only.
-
-## Verify and next step
-
-`npm test` runs domain, HTTP, and UI-contract tests. Browser layout and interaction still need hands-on checks at desktop and mobile sizes; the tests do not prove clinical readiness. See [`odd/tasks/agenda-pilot.md`](odd/tasks/agenda-pilot.md) for work units, evidence, and deferred decisions.
+The old Node/SQLite pilot files remain in the repository **as legacy pending user-executed tracked deletion**; they have not been retired or removed. Its ignored local `agendify.sqlite` remains untouched. Do not interpret the legacy entry point or its unauthenticated API as the current staff workflow. Neither implementation is authorized for real data, cloud deployment, or production. The synthetic-only usage rule cannot itself detect fictional versus real information. Legal basis, hosting region, privacy controls, security, operations, and independent signoff are outstanding: see [deployment readiness](docs/deployment.md).

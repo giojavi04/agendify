@@ -1,6 +1,6 @@
 # Deployment readiness (synthetic data only)
 
-**Do not enter real patient data or provision production until the legal, security, and operational gates below are signed off.** This is a deployment plan, not a compliance claim. The existing Node/SQLite pilot remains provisional until N3c reaches tested booking/cancellation parity; do not retire or expose it publicly.
+**Do not enter real patient data or provision production until the legal, region, privacy, security, and operational gates below are signed off.** This is a deployment plan, not a compliance claim. The Next.js/Supabase synthetic staff flow has passed independent 19/19 unit and 59/59 database tests, local Auth/PostgREST, and authenticated Chrome book/cancel smoke. These local results do not authorize production or real data. Nine tracked old Node/SQLite pilot files remain as legacy pending user-executed tracked deletion; the ignored `agendify.sqlite` remains untouched. Do not treat the pilot as retired or expose it publicly.
 
 ## Local development
 
@@ -31,12 +31,12 @@ Never place a service-role key in `NEXT_PUBLIC_*` or browser code. Keep server s
 | Staging | Future release rehearsal | Separate managed deployments, credentials, access, and data; synthetic data only |
 | Production | Not provisioned or authorized | Blocked until formal signoff and restore/security rehearsal |
 
-For each future environment, configure `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` in that environment's managed Next settings, not repository files. Scope deployment credentials and Supabase project access separately by environment. Apply reviewed versioned migrations to the corresponding project only after backup and change approval; verify tenant-denial, conflict, and cancellation tests before promotion. CI runs only on ephemeral local services and **never deploys**. No production credentials belong in CI.
+For each future environment, configure `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` in that environment's managed Next settings, not repository files. Scope deployment credentials and Supabase project access separately by environment. Apply reviewed versioned migrations to the corresponding project only after backup and change approval; verify tenant-denial, conflict, and cancellation tests before promotion. CI runs only on ephemeral local services and **never deploys**. No production credentials belong in CI. Local Auth/PostgREST and browser smoke are separate checks, not evidence of cloud behavior or legal approval.
 
 ## Go-live decision gates
 
 - [ ] Ecuador LOPDP and SPDP counsel/owner assessment covers health-data legal basis, notices, rights, transfers, contracts and processor/subprocessor terms, residency and cross-border safeguards. Document approval of the actual Supabase and Next hosting regions. Supabase São Paulo (`sa-east-1`) is a **candidate**, not legally approved.
-- [ ] N3c staff-only behavior parity, authenticated tenant isolation, negative RLS tests, auditability, and live signed-in flow are verified. Remove or restrict provisional pilot only after parity.
+- [ ] Confirm N3c staff-only behavior parity, authenticated tenant isolation, negative RLS tests, auditability, and live signed-in flow against release criteria. Local synthetic tests and smoke have passed, but do not establish deployment readiness. User-executed tracked removal of the legacy Node/SQLite pilot remains pending; verify its removal separately before any public exposure.
 - [ ] Access uses least privilege, separate accounts and MFA for cloud/admin users; review access regularly, rotate and revoke credentials, and audit privileged actions without logging health data.
 - [ ] Define retention/deletion schedules and subject-rights workflow; minimize collected fields and prevent real patient data in logs, analytics, fixtures, and support tickets.
 - [ ] Define encrypted backup frequency and retention, off-site protection, recovery objectives, and a tested restore into an isolated environment; never rehearse against production data without authorization.
