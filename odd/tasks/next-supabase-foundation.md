@@ -54,5 +54,7 @@ The pilot has no authentication, tenant isolation, or operational controls. The 
 
 - 2026-09-30: Cleanup commit f743a8158cd664ef11fb6b1f69a4a666cba889d0 removes nine tracked pilot files and leaves ignored agendify.sqlite untouched. The historical odd/tasks/agenda-pilot.md remains. The deletion is a cohesive 667-line removal, above the usual 400-line review target; review it as a distinct retirement work unit rather than combining it with other implementation diffs.
 
+- 2026-09-30: Native review INSPECT and explicit committed-range START for the retirement work unit returned `empty_candidate_base_ref_required` on a clean worktree; no lineage or receipt was created. This is a pending review check, not approval. Untracked .codegraph/ was excluded from review scope and left untouched.
+
 ## Next step
-Inspect native review authority for the committed candidate; separately obtain Ecuador legal/privacy, region and operational signoff before any real patient data or production rollout. Patient identity/contact, site timezone, audit and legal/region signoff remain future go-live decisions. Do not handle real data.
+Resolve the native committed-range base-ref selection before claiming a review receipt; independently obtain Ecuador legal/privacy, region and operational signoff before any real patient data or production rollout. Patient identity/contact, site timezone, audit and legal/region signoff remain future go-live decisions. Do not handle real data.
