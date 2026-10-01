@@ -2,6 +2,7 @@
   "name": "agendify-web",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@10.34.6+sha512.7e1ae66a83a9143c118cc1944f37cc4f2b8acddeda4b001cfa78908f6e46e45e15292739ca6c9d026426cc757e9318cc98c5551d6a16c165097b0028ba87b4e6",
   "type": "module",
   "scripts": {
     "dev": "next dev",
@@ -14,7 +15,7 @@
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.2",
-    "next": "^16.0.0",
+    "next": "^16.3.8",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
