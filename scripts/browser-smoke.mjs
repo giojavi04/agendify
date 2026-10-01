@@ -70,6 +70,18 @@ try {
   await page.getByRole('button', { name: 'Ingresar' }).click();
   await page.waitForURL(`${base}/dashboard`, { timeout: 30000 });
   await page.getByRole('heading', { name: 'Agenda de demostración' }).waitFor();
+  stage = 'mobile booking controls';
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByLabel('Sede').waitFor({ state: 'visible' });
+  const bookingMobile = await page.evaluate(() => ({
+    overflow: document.documentElement.scrollWidth > window.innerWidth,
+    controls: [...document.querySelectorAll('.booking-page input, .booking-page select, .booking-page button')].map((control) => {
+      const box = control.getBoundingClientRect();
+      return { width: box.width, height: box.height, left: box.left, right: box.right };
+    }),
+  }));
+  if (bookingMobile.overflow || bookingMobile.controls.length !== 6 || bookingMobile.controls.some(({ width, height, left, right }) => width < 44 || height < 44 || left < 0 || right > 390)) throw new Error('Mobile booking controls or overflow assertion failed');
+  await page.setViewportSize({ width: 1280, height: 800 });
   stage = 'booking';
   await page.getByLabel('Sede').selectOption(site);
   await page.getByLabel('Profesional asignado').selectOption(professional);
