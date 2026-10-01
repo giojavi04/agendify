@@ -16,6 +16,8 @@ AGENDIFY_SYNTHETIC_ONLY=true
 
 `AGENDIFY_SYNTHETIC_ONLY` must be `true` for local synthetic-only scheduling; unset or any other value fails closed. This is not a production enablement switch. The staff agenda uses fictional patient labels and UTC slots 08:00–17:30; timezone-by-site and real patient accounts are deferred. No real patient data is permitted.
 
+For a live, local-only synthetic Auth/PostgREST check, start the local stack at repository root, then run `npm run test:integration:local` in `apps/web`. The script captures `supabase status --output env` privately, rejects non-loopback API or database endpoints, provisions uniquely tagged fictional fixtures, and removes only its created IDs. Do not redirect or share Supabase CLI credential output. If cleanup fails, remove the reported synthetic IDs manually in the same local stack before rerunning. This exercises local Auth, tenant denial, booking conflict, and cancellation, **not** the Next authenticated browser flow, cloud environments, or production readiness.
+
 Never place a service-role key in `NEXT_PUBLIC_*` or browser code. Keep server secrets out of client bundles. Local SQL migrations and pgTAP fixtures must remain synthetic.
 
 ## Isolated environments and promotion
