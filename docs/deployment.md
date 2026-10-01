@@ -1,6 +1,6 @@
 # Deployment readiness (synthetic data only)
 
-**Do not enter real patient data or provision production until the legal, region, privacy, security, and operational gates below are signed off.** This is a deployment plan, not a compliance claim. The Next.js/Supabase synthetic staff flow has passed independent 19/19 unit and 59/59 database tests, local Auth/PostgREST, and authenticated Chrome book/cancel smoke. These local results do not authorize production or real data. Nine tracked old Node/SQLite pilot files remain as legacy pending user-executed tracked deletion; the ignored `agendify.sqlite` remains untouched. Do not treat the pilot as retired or expose it publicly.
+**Do not enter real patient data or provision production until the legal, region, privacy, security, and operational gates below are signed off.** This is a deployment plan, not a compliance claim. The Next.js/Supabase synthetic staff flow has passed independent 19/19 unit and 59/59 database tests, local Auth/PostgREST, and authenticated Chrome book/cancel smoke. These local results do not authorize production or real data. The nine tracked Node/SQLite pilot files are retired in this work unit; Next.js + Supabase is the primary staff flow. The ignored local `agendify.sqlite` remains untouched and has not been migrated, and the historical `odd/tasks/agenda-pilot.md` remains. Neither local checks nor pilot retirement authorize public exposure.
 
 ## Local development
 
@@ -36,7 +36,7 @@ For each future environment, configure `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBL
 ## Go-live decision gates
 
 - [ ] Ecuador LOPDP and SPDP counsel/owner assessment covers health-data legal basis, notices, rights, transfers, contracts and processor/subprocessor terms, residency and cross-border safeguards. Document approval of the actual Supabase and Next hosting regions. Supabase São Paulo (`sa-east-1`) is a **candidate**, not legally approved.
-- [ ] Confirm N3c staff-only behavior parity, authenticated tenant isolation, negative RLS tests, auditability, and live signed-in flow against release criteria. Local synthetic tests and smoke have passed, but do not establish deployment readiness. User-executed tracked removal of the legacy Node/SQLite pilot remains pending; verify its removal separately before any public exposure.
+- [ ] Confirm N3c staff-only behavior parity, authenticated tenant isolation, negative RLS tests, auditability, and live signed-in flow against release criteria. Local synthetic tests and smoke have passed, but do not establish deployment readiness. The tracked Node/SQLite pilot is retired in this work unit; verify the removal before any public exposure.
 - [ ] Access uses least privilege, separate accounts and MFA for cloud/admin users; review access regularly, rotate and revoke credentials, and audit privileged actions without logging health data.
 - [ ] Define retention/deletion schedules and subject-rights workflow; minimize collected fields and prevent real patient data in logs, analytics, fixtures, and support tickets.
 - [ ] Define encrypted backup frequency and retention, off-site protection, recovery objectives, and a tested restore into an isolated environment; never rehearse against production data without authorization.

@@ -1,6 +1,6 @@
 # Agendify
 
-**Local synthetic staff scheduling only.** The current Next.js + Supabase app supports a signed-in staff booking and cancellation flow for fictional appointments. Local unit, database, Auth/PostgREST, and authenticated Chrome checks have passed; this is neither production-ready nor approved for real patient data. The old Node/SQLite pilot code is still tracked as legacy, pending user-executed deletion. See [deployment readiness](docs/deployment.md) for legal, region, privacy, and operational gates.
+**Local synthetic staff scheduling only.** The current Next.js + Supabase app supports a signed-in staff booking and cancellation flow for fictional appointments. Local unit, database, Auth/PostgREST, and authenticated Chrome checks have passed; this is neither production-ready nor approved for real patient data. The tracked Node/SQLite pilot files are retired in this work unit; the ignored local `agendify.sqlite` remains untouched and has not been migrated. See [deployment readiness](docs/deployment.md) for legal, region, privacy, and operational gates.
 
 ## Run the Next.js app locally
 
@@ -40,4 +40,4 @@ The integration smoke tests local Auth/PostgREST, tenant denial, booking conflic
 
 ## Legacy pilot and boundaries
 
-The old Node/SQLite pilot files remain in the repository **as legacy pending user-executed tracked deletion**; they have not been retired or removed. Its ignored local `agendify.sqlite` remains untouched. Do not interpret the legacy entry point or its unauthenticated API as the current staff workflow. Neither implementation is authorized for real data, cloud deployment, or production. The synthetic-only usage rule cannot itself detect fictional versus real information. Legal basis, hosting region, privacy controls, security, operations, and independent signoff are outstanding: see [deployment readiness](docs/deployment.md).
+Next.js + Supabase is the primary staff workflow. The tracked Node/SQLite pilot files are retired in this work unit; the ignored local `agendify.sqlite` remains untouched and has not been migrated. The historical task record remains at `odd/tasks/agenda-pilot.md`; it is not an active setup guide. Do not use the retired pilot's unauthenticated API as a staff workflow. Neither implementation is authorized for real data, cloud deployment, or production. The synthetic-only usage rule cannot itself detect fictional versus real information. Legal basis, hosting region, privacy controls, security, operations, and independent signoff are outstanding: see [deployment readiness](docs/deployment.md).
