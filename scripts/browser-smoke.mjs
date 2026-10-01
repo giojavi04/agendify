@@ -50,6 +50,20 @@ try {
     if (attempt === 59) throw new Error('Local Next login did not become ready');
     await new Promise((resolve) => setTimeout(resolve, 1000));
   }
+  stage = 'login error alert';
+  await page.goto(`${base}/login?error=1`);
+  await page.getByRole('alert').getByText('No se pudo iniciar sesión.').waitFor();
+  stage = 'mobile login controls';
+  await page.setViewportSize({ width: 390, height: 844 });
+  const mobile = await page.evaluate(() => ({
+    overflow: document.documentElement.scrollWidth > window.innerWidth,
+    controls: [...document.querySelectorAll('form input:not([type="hidden"]), form button')].map((control) => {
+      const box = control.getBoundingClientRect();
+      return { width: box.width, height: box.height, left: box.left, right: box.right };
+    }),
+  }));
+  if (mobile.overflow || mobile.controls.length !== 3 || mobile.controls.some(({ width, height, left, right }) => width < 44 || height < 44 || left < 0 || right > 390)) throw new Error('Mobile login controls or overflow assertion failed');
+  await page.setViewportSize({ width: 1280, height: 800 });
   stage = 'authentication';
   await page.getByLabel('Correo electrónico').fill(login.email);
   await page.getByLabel('Contraseña').fill(login.password);
