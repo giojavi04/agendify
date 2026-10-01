@@ -44,5 +44,7 @@ At root, `pnpm install --frozen-lockfile`, `pnpm test`, `pnpm exec tsc --noEmit`
 
 - 2026-10-01: R3 cleanup inspected both exact directories (no tracked intersections or symlinks), ran `codegraph uninit --force .` for this project, removed only old generated `apps/web/`, then SIGTERM'd the still-running project daemon after matching its PID command line to this repository. Both directories and the daemon are absent afterward; only the task-record edit remained in Git status. Neither Supabase nor tracked app content was altered.
 
+- 2026-10-01: Native ordinary review for the committed pnpm work-unit range (base R1 commit fb48044039f94b6a3c1cbde6f7ec68756fb83d13 through the R2 candidate) ran four provider-bound lenses and closed approved; exact acknowledgement burned authority for lineage `review-40afdb9552266306`. Two readability warnings (R2-001 in this task record, R2-002 in README) are explicitly non-blocking follow-ups, not corrections to this reviewed candidate. Native ASSESS for the same committed range reported high risk, RDD-on closed, and no separate verifier required; independent verification had already passed. The relocation R1 commit was verified independently but was not separately reviewed natively. Review never authorizes delivery or production.
+
 ## Next step
-Commit the task-record closeout, inspect native review authority for committed work-unit candidates and report any review block. Cloud CI and legal/privacy/security/region signoff remain pending before real patient data or production.
+Keep the two non-blocking readability suggestions for a separate future change if useful. Cloud CI execution and Ecuador legal/privacy/security/region and operational signoff remain pending before real patient data or production.
