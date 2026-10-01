@@ -4,9 +4,9 @@
 
 ## Local development
 
-Use Node.js 24, Docker, and the Supabase CLI. In `apps/web`, run `npm ci`; at repository root run `supabase start`, then in `apps/web` run `npm run dev`. Use fictional people and appointments only. Keep local configuration in ignored files, never in Git, CI logs, screenshots, or shared fixtures. `supabase start` prints local generated credentials: keep its output private and never paste it into issues or logs. Avoid `supabase status` when recording verification output; CI suppresses start output. Do not reset a populated local database.
+Use Node.js 24, Docker, and the Supabase CLI. At the repository root, run `npm ci` and `supabase start`, then run `npm run dev` there. Use fictional people and appointments only. Keep local configuration in ignored files, never in Git, CI logs, screenshots, or shared fixtures. `supabase start` prints local generated credentials: keep its output private and never paste it into issues or logs. Avoid `supabase status` when recording verification output; CI suppresses start output. Do not reset a populated local database.
 
-Set these names in an ignored `apps/web/.env.local` using **local-only** values from your own CLI session (placeholders here are not credentials):
+Set these names in an ignored root `.env.local` using **local-only** values from your own CLI session (placeholders here are not credentials):
 
 ```text
 NEXT_PUBLIC_SUPABASE_URL=<local-project-url>
@@ -16,9 +16,9 @@ AGENDIFY_SYNTHETIC_ONLY=true
 
 `AGENDIFY_SYNTHETIC_ONLY` must be `true` for local synthetic-only scheduling; unset or any other value fails closed. This is not a production enablement switch. The staff agenda uses fictional patient labels and UTC slots 08:00–17:30; timezone-by-site and real patient accounts are deferred. No real patient data is permitted.
 
-For a live, local-only synthetic Auth/PostgREST check, start the local stack at repository root, then run `npm run test:integration:local` in `apps/web`. The script captures `supabase status --output env` privately, rejects non-loopback API or database endpoints, provisions uniquely tagged fictional fixtures, and removes only its created IDs. Do not redirect or share Supabase CLI credential output. If cleanup fails, remove the reported synthetic IDs manually in the same local stack before rerunning. This exercises local Auth, tenant denial, booking conflict, and cancellation, **not** the Next authenticated browser flow, cloud environments, or production readiness.
+For a live, local-only synthetic Auth/PostgREST check, start the local stack at repository root, then run `npm run test:integration:local` at the repository root. The script captures `supabase status --output env` privately, rejects non-loopback API or database endpoints, provisions uniquely tagged fictional fixtures, and removes only its created IDs. Do not redirect or share Supabase CLI credential output. If cleanup fails, remove the reported synthetic IDs manually in the same local stack before rerunning. This exercises local Auth, tenant denial, booking conflict, and cancellation, **not** the Next authenticated browser flow, cloud environments, or production readiness.
 
-For an automated local authenticated Next browser check, run `npm run test:browser:local` in `apps/web` after starting the local Supabase stack. This uses installed Chrome (`/Applications/Google Chrome.app/Contents/MacOS/Google Chrome`; override with an absolute local executable via `AGENDIFY_CHROME_PATH`), headless isolated browser context, a temporary local Next dev child, and uniquely scoped synthetic fixtures. It rejects non-loopback Supabase endpoints and external browser requests, and attempts ID-scoped cleanup even on failure. Keep CLI output private; if cleanup fails, inspect the local synthetic fixtures before rerunning. This does not prove cloud behavior, production readiness, or legal compliance.
+For an automated local authenticated Next browser check, run `npm run test:browser:local` at the repository root after starting the local Supabase stack. This uses installed Chrome (`/Applications/Google Chrome.app/Contents/MacOS/Google Chrome`; override with an absolute local executable via `AGENDIFY_CHROME_PATH`), headless isolated browser context, a temporary local Next dev child, and uniquely scoped synthetic fixtures. It rejects non-loopback Supabase endpoints and external browser requests, and attempts ID-scoped cleanup even on failure. Keep CLI output private; if cleanup fails, inspect the local synthetic fixtures before rerunning. This does not prove cloud behavior, production readiness, or legal compliance.
 
 Never place a service-role key in `NEXT_PUBLIC_*` or browser code. Keep server secrets out of client bundles. Local SQL migrations and pgTAP fixtures must remain synthetic.
 
@@ -45,4 +45,4 @@ For each future environment, configure `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBL
 
 ## CI-equivalent checks
 
-At repository root, after the local runtime is available: `supabase start`, `supabase test db`, `supabase db lint --local`. In `apps/web`: `npm ci`, `npm test`, `npx tsc --noEmit`, `npm run build`. CI does not exercise a live cloud deployment, backup restore, regional/legal approval, or authenticated browser smoke testing. Lint for web is not configured yet; add a compatible ESLint/Next toolchain in a separately authorized dependency update rather than silently changing the application.
+At repository root, after the local runtime is available: `supabase start`, `supabase test db`, `supabase db lint --local`. At the repository root: `npm ci`, `npm test`, `npx tsc --noEmit`, `npm run build`. CI does not exercise a live cloud deployment, backup restore, regional/legal approval, or authenticated browser smoke testing. Lint for web is not configured yet; add a compatible ESLint/Next toolchain in a separately authorized dependency update rather than silently changing the application.

@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { createClient } from '@supabase/supabase-js';
 
 // Capture CLI credentials in memory only; never include CLI output or SDK errors in diagnostics.
-const root = fileURLToPath(new URL('../../../', import.meta.url));
+const root = fileURLToPath(new URL('../', import.meta.url));
 const fail = (message) => { throw new Error(message); };
 const check = (result, label) => {
   if (result.error) fail(`${label} failed (code ${result.error.code ?? 'unknown'})`);

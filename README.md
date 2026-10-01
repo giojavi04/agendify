@@ -7,7 +7,7 @@
 Requires Node.js 24+, Docker, and the Supabase CLI. Use only fictional identities and appointments. Do not paste CLI-generated credentials into issues, logs, or shared files.
 
 1. At the repository root, start local Supabase Docker services: `supabase start`.
-2. In `apps/web`, run `npm ci`. Set these names in ignored `apps/web/.env.local` with **local-only** values from your own Supabase CLI session (no credentials are provided here):
+2. At the repository root, run `npm ci`. Set these names in ignored root `.env.local` with **local-only** values from your own Supabase CLI session (no credentials are provided here):
 
    ```text
    NEXT_PUBLIC_SUPABASE_URL=<local-project-url>
@@ -15,7 +15,7 @@ Requires Node.js 24+, Docker, and the Supabase CLI. Use only fictional identitie
    AGENDIFY_SYNTHETIC_ONLY=true
    ```
 
-3. In `apps/web`, run `npm run dev` and open the local Next.js URL shown by the command. Sign in with a **local test staff account**: authentication is required for the staff agenda. Use only synthetic fixture identities; do not use real patient or staff information. The synthetic gate must be exactly `true`; unset or other values fail closed. It is not a production enablement switch.
+3. At the repository root, run `npm run dev` and open the local Next.js URL shown by the command. Sign in with a **local test staff account**: authentication is required for the staff agenda. Use only synthetic fixture identities; do not use real patient or staff information. The synthetic gate must be exactly `true`; unset or other values fail closed. It is not a production enablement switch.
 
 ## Verify locally
 
@@ -26,7 +26,7 @@ supabase test db
 supabase db lint --local
 ```
 
-From `apps/web` after `npm ci`:
+From the repository root after `npm ci`:
 
 ```sh
 npm test

@@ -3,7 +3,7 @@ import { randomBytes, randomUUID } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { createClient } from '@supabase/supabase-js';
 
-const root = fileURLToPath(new URL('../../../', import.meta.url));
+const root = fileURLToPath(new URL('../', import.meta.url));
 const loopback = (host) => host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
 export function localServices() {
   let output;
