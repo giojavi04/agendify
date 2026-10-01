@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "test": "node --test --experimental-strip-types tests/*.test.ts",
-    "test:integration:local": "node scripts/local-smoke.mjs"
+    "test:integration:local": "node scripts/local-smoke.mjs",
+    "test:browser:local": "node scripts/browser-smoke.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
@@ -21,6 +22,7 @@
     "@types/node": "^24.0.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
+    "playwright-core": "^1.63.0",
     "typescript": "^5.9.0"
   },
   "engines": {

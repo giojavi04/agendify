@@ -18,6 +18,8 @@ AGENDIFY_SYNTHETIC_ONLY=true
 
 For a live, local-only synthetic Auth/PostgREST check, start the local stack at repository root, then run `npm run test:integration:local` in `apps/web`. The script captures `supabase status --output env` privately, rejects non-loopback API or database endpoints, provisions uniquely tagged fictional fixtures, and removes only its created IDs. Do not redirect or share Supabase CLI credential output. If cleanup fails, remove the reported synthetic IDs manually in the same local stack before rerunning. This exercises local Auth, tenant denial, booking conflict, and cancellation, **not** the Next authenticated browser flow, cloud environments, or production readiness.
 
+For an automated local authenticated Next browser check, run `npm run test:browser:local` in `apps/web` after starting the local Supabase stack. This uses installed Chrome (`/Applications/Google Chrome.app/Contents/MacOS/Google Chrome`; override with an absolute local executable via `AGENDIFY_CHROME_PATH`), headless isolated browser context, a temporary local Next dev child, and uniquely scoped synthetic fixtures. It rejects non-loopback Supabase endpoints and external browser requests, and attempts ID-scoped cleanup even on failure. Keep CLI output private; if cleanup fails, inspect the local synthetic fixtures before rerunning. This does not prove cloud behavior, production readiness, or legal compliance.
+
 Never place a service-role key in `NEXT_PUBLIC_*` or browser code. Keep server secrets out of client bundles. Local SQL migrations and pgTAP fixtures must remain synthetic.
 
 ## Isolated environments and promotion
