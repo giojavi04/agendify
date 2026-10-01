@@ -8,6 +8,24 @@ function fail(error: { code?: string } | null) {
   if (error) throw new SchedulingError(error.code === '23P01' ? 'conflict' : 'unavailable');
 }
 
+export async function listChoices(scope: Scope) {
+  const organizationId = uuid(scope.organizationId);
+  const [sites, professionals, assignments, patients] = await Promise.all([
+    scope.client.from('sites').select('id,name').eq('organization_id', organizationId),
+    scope.client.from('professionals').select('id,name').eq('organization_id', organizationId),
+    scope.client.from('professional_sites').select('site_id,professional_id').eq('organization_id', organizationId),
+    scope.client.from('patients').select('id,display_label,is_synthetic').eq('organization_id', organizationId)
+      .eq('is_synthetic', true).in('display_label', [...fictionalLabels]),
+  ]);
+  for (const result of [sites, professionals, assignments, patients]) {
+    fail(result.error);
+    if (!Array.isArray(result.data)) throw new SchedulingError('unavailable');
+  }
+  if (patients.data!.some((patient) => patient.is_synthetic !== true || !fictionalLabels.some((label) => label === patient.display_label))) throw new SchedulingError('unavailable');
+  return { sites: sites.data!, professionals: professionals.data!, assignments: assignments.data!,
+    patients: patients.data!.map(({ id, display_label }) => ({ id, label: display_label })) };
+}
+
 export async function listDay(scope: Scope, day: unknown) {
   const { start, end } = utcDay(day);
   const { data, error } = await scope.client.from('appointments')

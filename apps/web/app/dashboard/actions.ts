@@ -1,7 +1,7 @@
 'use server';
 
 import { requireStaff } from '../../lib/auth/staff';
-import { cancelBooking, createBooking, listDay } from '../../lib/scheduling/data';
+import { cancelBooking, createBooking, listDay, listChoices } from '../../lib/scheduling/data';
 import { SchedulingError } from '../../lib/scheduling/validation';
 
 async function run<T>(operation: (scope: Awaited<ReturnType<typeof requireStaff>>) => Promise<T>) {
@@ -12,6 +12,10 @@ async function run<T>(operation: (scope: Awaited<ReturnType<typeof requireStaff>
   } catch (error) {
     return { ok: false as const, error: error instanceof SchedulingError ? error.message : 'Scheduling unavailable.' };
   }
+}
+
+export async function getChoices() {
+  return run((scope) => listChoices(scope));
 }
 
 export async function listBookings(day: string) {

@@ -11,7 +11,10 @@ Set these names in an ignored `apps/web/.env.local` using **local-only** values 
 ```text
 NEXT_PUBLIC_SUPABASE_URL=<local-project-url>
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<local-publishable-key>
+AGENDIFY_SYNTHETIC_ONLY=true
 ```
+
+`AGENDIFY_SYNTHETIC_ONLY` must be `true` for local synthetic-only scheduling; unset or any other value fails closed. This is not a production enablement switch. The staff agenda uses fictional patient labels and UTC slots 08:00–17:30; timezone-by-site and real patient accounts are deferred. No real patient data is permitted.
 
 Never place a service-role key in `NEXT_PUBLIC_*` or browser code. Keep server secrets out of client bundles. Local SQL migrations and pgTAP fixtures must remain synthetic.
 
