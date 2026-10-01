@@ -28,7 +28,7 @@ try {
   const base = `http://127.0.0.1:${port}`;
   child = spawn(process.execPath, ['node_modules/next/dist/bin/next', 'dev', '--hostname', '127.0.0.1', '--port', String(port)], {
     cwd: new URL('../', import.meta.url),
-    env: { ...process.env, NEXT_PUBLIC_SUPABASE_URL: services.api, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: services.anon, AGENDIFY_SYNTHETIC_ONLY: 'true' },
+    env: { ...process.env, NEXT_PUBLIC_SUPABASE_URL: services.api, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: services.anon, AGENDIFY_SYNTHETIC_ONLY: 'true', AGENDIFY_BROWSER_SMOKE: '1' },
     stdio: 'ignore',
   });
   const executablePath = process.env.AGENDIFY_CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
@@ -44,7 +44,7 @@ try {
   const page = await context.newPage();
   stage = 'login readiness';
   for (let attempt = 0; attempt < 60; attempt++) {
-    if (child.exitCode !== null) throw new Error('Next child exited before becoming ready');
+    if (stopped(child)) throw new Error('Next child exited before becoming ready');
     try { const response = await page.goto(`${base}/login`, { timeout: 3000 }); if (response?.ok()) break; }
     catch { /* dev startup */ }
     if (attempt === 59) throw new Error('Local Next login did not become ready');

@@ -1,8 +1,10 @@
 # Deployment readiness (synthetic data only)
 
-**Do not enter real patient data or provision production until the legal, region, privacy, security, and operational gates below are signed off.** This is a deployment plan, not a compliance claim. The Next.js/Supabase synthetic staff flow has passed independent 19/19 unit and 59/59 database tests, local Auth/PostgREST, and authenticated Chrome book/cancel smoke. These local results do not authorize production or real data. The nine tracked Node/SQLite pilot files are retired in this work unit; Next.js + Supabase is the primary staff flow. The ignored local `agendify.sqlite` remains untouched and has not been migrated, and the historical `odd/tasks/agenda-pilot.md` remains. Neither local checks nor pilot retirement authorize public exposure.
+**Do not enter real patient data or provision production until the legal, region, privacy, security, and operational gates below are signed off.** This is a deployment plan, not a compliance claim. The Next.js/Supabase synthetic staff flow has passed independent 19/19 unit and 59/59 database tests, local Auth/PostgREST, and authenticated Chrome book/cancel smoke. These local results do not authorize production or real data. The nine tracked Node/SQLite pilot files are retired in this work unit; Next.js + Supabase is the primary staff flow. The old local `agendify.sqlite` is not tracked, required, or migrated; the historical `odd/tasks/agenda-pilot.md` remains. Neither local checks nor pilot retirement authorize public exposure.
 
 ## Local development
+
+Tailwind CSS v4 uses the root PostCSS plugin and theme/utility imports in `app/globals.css`; Preflight is intentionally omitted to preserve existing demo styles and browser defaults.
 
 Use Node.js 24, Docker, and the Supabase CLI. At the repository root, run `pnpm install --frozen-lockfile` and `supabase start`, then run `pnpm dev` there. Use fictional people and appointments only. Keep local configuration in ignored files, never in Git, CI logs, screenshots, or shared fixtures. `supabase start` prints local generated credentials: keep its output private and never paste it into issues or logs. Avoid `supabase status` when recording verification output; CI suppresses start output. Do not reset a populated local database.
 

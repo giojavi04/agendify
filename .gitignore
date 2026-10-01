@@ -10,6 +10,7 @@ node_modules/
 /.cache/
 coverage/
 .next/
+/.next-browser-smoke/
 out/
 *.tsbuildinfo
 /next-env.d.ts

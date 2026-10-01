@@ -1,6 +1,6 @@
 # Agendify
 
-**Local synthetic staff scheduling only.** The current Next.js + Supabase app supports a signed-in staff booking and cancellation flow for fictional appointments. Local unit, database, Auth/PostgREST, and authenticated Chrome checks have passed; this is neither production-ready nor approved for real patient data. The tracked Node/SQLite pilot files are retired in this work unit; the ignored local `agendify.sqlite` remains untouched and has not been migrated. See [deployment readiness](docs/deployment.md) for legal, region, privacy, and operational gates.
+**Local synthetic staff scheduling only.** The current Next.js + Supabase app supports a signed-in staff booking and cancellation flow for fictional appointments. Local unit, database, Auth/PostgREST, and authenticated Chrome checks have passed; this is neither production-ready nor approved for real patient data. The tracked Node/SQLite pilot files are retired in this work unit; the old local `agendify.sqlite` is not tracked, required, or migrated. See [deployment readiness](docs/deployment.md) for legal, region, privacy, and operational gates.
 
 ## Run the Next.js app locally
 
@@ -15,7 +15,8 @@ Requires Node.js 24+, Docker, and the Supabase CLI. Use only fictional identitie
    AGENDIFY_SYNTHETIC_ONLY=true
    ```
 
-3. At the repository root, run `pnpm dev` and open the local Next.js URL shown by the command. Sign in with a **local test staff account**: authentication is required for the staff agenda. Use only synthetic fixture identities; do not use real patient or staff information. The synthetic gate must be exactly `true`; unset or other values fail closed. It is not a production enablement switch.
+3. Tailwind CSS v4 is installed through the frozen pnpm lockfile and compiled with the root PostCSS plugin. `app/globals.css` imports its theme and utilities without Preflight, preserving the existing demo styles and browser defaults.
+4. At the repository root, run `pnpm dev` and open the local Next.js URL shown by the command. Sign in with a **local test staff account**: authentication is required for the staff agenda. Use only synthetic fixture identities; do not use real patient or staff information. The synthetic gate must be exactly `true`; unset or other values fail closed. It is not a production enablement switch.
 
 ## Verify locally
 
@@ -40,4 +41,4 @@ The integration smoke tests local Auth/PostgREST, tenant denial, booking conflic
 
 ## Legacy pilot and boundaries
 
-Next.js + Supabase is the primary staff workflow. The tracked Node/SQLite pilot files are retired in this work unit; the ignored local `agendify.sqlite` remains untouched and has not been migrated. The historical task record remains at `odd/tasks/agenda-pilot.md`; it is not an active setup guide. Do not use the retired pilot's unauthenticated API as a staff workflow. Neither implementation is authorized for real data, cloud deployment, or production. The synthetic-only usage rule cannot itself detect fictional versus real information. Legal basis, hosting region, privacy controls, security, operations, and independent signoff are outstanding: see [deployment readiness](docs/deployment.md).
+Next.js + Supabase is the primary staff workflow. The tracked Node/SQLite pilot files are retired in this work unit; the old local `agendify.sqlite` is not tracked, required, or migrated. The historical task record remains at `odd/tasks/agenda-pilot.md`; it is not an active setup guide. Do not use the retired pilot's unauthenticated API as a staff workflow. Neither implementation is authorized for real data, cloud deployment, or production. The synthetic-only usage rule cannot itself detect fictional versus real information. Legal basis, hosting region, privacy controls, security, operations, and independent signoff are outstanding: see [deployment readiness](docs/deployment.md).
